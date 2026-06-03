@@ -215,6 +215,13 @@ rm -f /tmp/openclaw-gateway.lock 2>/dev/null || true
 rm -f "$CONFIG_DIR/gateway.lock" 2>/dev/null || true
 
 echo "Dev mode: ${OPENCLAW_DEV_MODE:-false}"
+# Force OpenClaw to use the current Anthropic secret from the Worker runtime
+# even when an old /root/.openclaw/openclaw.json config already exists.
+# OpenClaw treats OPENCLAW_LIVE_ANTHROPIC_KEY as a highest-priority live key.
+if [ -n "$ANTHROPIC_API_KEY" ]; then
+    export OPENCLAW_LIVE_ANTHROPIC_KEY="$ANTHROPIC_API_KEY"
+    echo "Anthropic live key override enabled from ANTHROPIC_API_KEY"
+fi
 
 # Gateway token (if set) is already written to openclaw.json by the config
 # patch above (gateway.auth.token). We deliberately avoid passing --token on
